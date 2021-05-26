@@ -15,8 +15,8 @@ import java.util.List;
 
 public class HBaseClientUtil {
 
-    private static final String TABLE_NAME = "test:test";
-    private static final String CF_DEFAULT = "cf";
+    private static final String TABLE_NAME = "TEST:TEST";
+    private static final String CF_DEFAULT = "data";
 
     /**
      * HBase 通用客户端Kerberos认证
@@ -61,7 +61,7 @@ public class HBaseClientUtil {
      *
      * @param resources  配置文件资源
      * @param krb5Conf   krb5.conf文件路径
-     * @param principal  Kerberos用户主体，eg：xingweidong@BIGDATA.ZXXK.COM
+     * @param principal  Kerberos用户主体
      * @param keytabFile keytab文件路径
      * @return
      * @throws IOException
@@ -109,24 +109,24 @@ public class HBaseClientUtil {
         // 添加必要的配置文件 (hbase-site.xml, core-site.xml)
         List<String> resources = new ArrayList<String>() {
             {
-                add("/home/xwd/ws/hbase/hbase-clientconfig/hbase-conf/core-site.xml");
-                add("/home/xwd/ws/hbase/hbase-clientconfig/hbase-conf/hbase-site.xml");
-                add("/home/xwd/ws/hbase/hbase-clientconfig/hbase-conf/hdfs-site.xml");
+                add("/data/hbase-conf/core-site.xml");
+                add("/data/hbase-conf/hbase-site.xml");
+                add("/data/hbase-conf/hdfs-site.xml");
             }
         };
-        String krb5Conf = "/home/xwd/ws/hbase/krb5/krb5.conf";
-        String principal = "xingweidong@BIGDATA.ZXXK.COM";
-        String keytabFile = "/home/xwd/ws/hbase/krb5/xingweidong.keytab";
+        String krb5Conf = "/etc/krb5.conf";
+        String principal = "hbase@SSE.COM.CN";
+        String keytabFile = "/etc/kerberos/hbase.keytab";
 
         // HBase操作
         Connection connection = HBaseClientUtil.getHBaseConn(resources, krb5Conf, principal, keytabFile);
         createSchemaTables(connection);
 
         System.out.println(" Put data ");
-        Table table = connection.getTable(TableName.valueOf("test:test"));
+        Table table = connection.getTable(TableName.valueOf("TEST:TEST"));
         try {
             Put put = new Put(Bytes.toBytes("hbase_client_test"));
-            put.addColumn(Bytes.toBytes("cf"), Bytes.toBytes("col"), Bytes.toBytes("hbase_loginUserFromKeytab"));
+            put.addColumn(Bytes.toBytes("data"), Bytes.toBytes("col"), Bytes.toBytes("hbase_loginUserFromKeytab"));
             table.put(put);
         } finally {
             // 关闭连接
